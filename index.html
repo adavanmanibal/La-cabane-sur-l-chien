@@ -56,7 +56,6 @@
             transition: background-color 0.3s;
         }
 
-        /* --- Mode Gueule de bois (Switch) --- */
         .theme-switch-wrapper {
             position: absolute;
             top: 15px;
@@ -184,7 +183,6 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
         }
 
-        /* --- Jauge de motivation --- */
         .range-slider {
             width: 100%;
             appearance: none;
@@ -367,7 +365,6 @@
             transform: translate(-50%, -50%) scale(1);
         }
 
-        /* --- Faux Loader --- */
         .loader-spinner {
             border: 4px solid var(--border-color);
             border-top: 4px solid #3b82f6;
@@ -532,6 +529,7 @@
         <div class="feedback-header">
             INSCRIPTION VALIDÉE ! 🥳🤘
         </div>
+        <img id="random-ficha" src="" alt="Ficha" style="width:100%; border-radius:12px; margin: 15px 0; display: none;">
         <div class="feedback-text">
             T'as réussi le test. Prépare ton foie et tes affaires, on se voit en mars 2027.
         </div>
@@ -553,7 +551,6 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         
-        // Mode sombre
         const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
         toggleSwitch.addEventListener('change', function(e) {
             if (e.target.checked) {
@@ -563,7 +560,6 @@
             }    
         });
 
-        // Jauge de motivation
         const slider = document.getElementById('motivation');
         const motEmoji = document.getElementById('mot-emoji');
         slider.addEventListener('input', function() {
@@ -584,6 +580,7 @@
         const feedbackPopup = document.getElementById('feedback-popup');
         const errorPopup = document.getElementById('error-popup');
         const closeErrorBtn = document.getElementById('close-error');
+        const fichaImg = document.getElementById('random-ficha');
         
         const captchaImages = document.querySelectorAll('.captcha-img');
         const captchaInput = document.getElementById('captcha-valide');
@@ -642,7 +639,6 @@
                 return;
             }
 
-            // Lancement du faux radar à imposteur
             loaderPopup.classList.add('show');
             
             const phrases = [
@@ -663,12 +659,17 @@
                     clearInterval(interval);
                     loaderPopup.classList.remove('show');
                     
-                    // Vérification du captcha après le chargement
                     const hasImposter = Array.from(document.querySelectorAll('.bts-false')).some(img => img.classList.contains('selected'));
 
                     if (hasImposter) {
                         errorPopup.classList.add('show');
                     } else {
+                        // choix du fichier aléatoire
+                        const nombreDeFichiers = 5;
+                        const num = Math.floor(Math.random() * nombreDeFichiers) + 1;
+                        fichaImg.src = `ficha/ficha${num}.gif`;
+                        fichaImg.style.display = 'block';
+
                         feedbackPopup.classList.add('show');
                         confetti({
                             particleCount: 200,
@@ -678,7 +679,7 @@
                         });
                     }
                 }
-            }, 900); // Change de phrase presque toutes les secondes
+            }, 900);
         });
 
         feedbackPopup.addEventListener('click', function() {
