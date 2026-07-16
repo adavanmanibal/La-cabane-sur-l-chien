@@ -289,6 +289,33 @@
             transform: scale(1.02);
         }
 
+        .captcha-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .captcha-img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .captcha-img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
+        .captcha-img.selected {
+            border-color: #3b82f6;
+            transform: scale(0.95);
+        }
+
         .submit-btn {
             width: 100%;
             padding: 16px;
@@ -359,6 +386,15 @@
             border-bottom: 2px solid #dcfce3;
         }
 
+        #error-popup {
+            border: 2px solid #ef4444;
+        }
+        
+        #error-popup .feedback-header {
+            color: #991b1b;
+            border-bottom: 2px solid #fecaca;
+        }
+
         .feedback-header {
             font-size: 20px;
             margin-bottom: 12px;
@@ -366,11 +402,31 @@
             font-weight: 800;
         }
 
+        .error-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        .retry-btn {
+            margin-top: 20px;
+            padding: 12px 20px;
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+
         @media (max-width: 600px) {
             .content { padding: 20px 20px; }
             h1 { font-size: 23px; }
             .button-area { flex-direction: column; gap: 10px; min-height: auto; }
             .btn-ambiance { max-width: 100%; }
+            .captcha-grid { grid-template-columns: repeat(2, 1fr); }
             .form-group { padding: 15px; }
         }
     </style>
@@ -454,10 +510,19 @@
                 </select>
             </div>
 
-            <div class="form-group" style="text-align: center;">
-                <label class="form-label">Un œil sur mes photos ?</label>
-                <p class="checkbox-text" style="margin-bottom: 15px;">En dehors du webmarketing, je suis photographe. Découvre mon travail ici :</p>
-                <a href="https://adavan.fr" target="_blank" style="display: inline-block; padding: 12px 24px; background: #2563eb; color: white; text-decoration: none; border-radius: 50px; font-weight: 600;">Voir adavan.fr 📸</a>
+            <div class="form-group">
+                <label class="form-label">Vérification de sécurité (Anti-imposteur)</label>
+                <p class="checkbox-text" style="margin-top: 0;">Sélectionne uniquement les photos de la bande pour prouver ton identité.</p>
+                
+                <div class="captcha-grid">
+                    <img src="img/ficha1.jpg" class="captcha-img bts-true" alt="Photo 1">
+                    <img src="img/inconnu1.jpg" class="captcha-img bts-false" alt="Photo 2">
+                    <img src="img/ficha2.jpg" class="captcha-img bts-true" alt="Photo 3">
+                    <img src="img/inconnu2.jpg" class="captcha-img bts-false" alt="Photo 4">
+                    <img src="img/ficha3.jpg" class="captcha-img bts-true" alt="Photo 5">
+                    <img src="img/inconnu3.jpg" class="captcha-img bts-false" alt="Photo 6">
+                </div>
+                <input type="hidden" id="captcha-valide" required>
             </div>
 
             <button type="submit" class="submit-btn">Valider mon inscription 🚀</button>
@@ -479,6 +544,17 @@
         <div class="feedback-text">
             T'as réussi le test. Prépare ton foie et tes affaires, on se voit en mars 2027.
         </div>
+    </div>
+
+    <div id="error-popup" class="popup">
+        <div class="error-icon">❌</div>
+        <div class="feedback-header">
+            ALERTE INTRUS ! 🚨
+        </div>
+        <div class="feedback-text">
+            Tu as sélectionné au moins une personne qui n'était pas avec nous. L'accès t'est refusé, imposteur !
+        </div>
+        <button type="button" class="retry-btn" id="close-error">Réessayer</button>
     </div>
 
 </div>
@@ -514,7 +590,12 @@
         const loaderPopup = document.getElementById('loader-popup');
         const loaderText = document.getElementById('loader-text');
         const feedbackPopup = document.getElementById('feedback-popup');
+        const errorPopup = document.getElementById('error-popup');
+        const closeErrorBtn = document.getElementById('close-error');
         const fichaImg = document.getElementById('random-ficha');
+        
+        const captchaImages = document.querySelectorAll('.captcha-img');
+        const captchaInput = document.getElementById('captcha-valide');
         
         let moves = 0;
         const maxMoves = 6;
@@ -549,11 +630,24 @@
             ambianceInput.value = "party_selected";
         });
 
+        captchaImages.forEach(img => {
+            img.addEventListener('click', function() {
+                this.classList.toggle('selected');
+                const anySelected = Array.from(captchaImages).some(img => img.classList.contains('selected'));
+                captchaInput.value = anySelected ? "captcha_ok" : "";
+            });
+        });
+
         mainForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
             if (!ambianceInput.value) {
                 alert("N'oublie pas de choisir l'ambiance du week-end !");
+                return;
+            }
+
+            if (!captchaInput.value) {
+                alert("Sélectionne au moins une photo pour le test de sécurité !");
                 return;
             }
 
@@ -576,24 +670,30 @@
                     clearInterval(interval);
                     loaderPopup.classList.remove('show');
                     
-                    const nombreDeFichiers = 5;
-                    const num = Math.floor(Math.random() * nombreDeFichiers) + 1;
-                    fichaImg.src = `ficha/ficha${num}.GIF`;
-                    fichaImg.style.display = 'block';
+                    const hasImposter = Array.from(document.querySelectorAll('.bts-false')).some(img => img.classList.contains('selected'));
 
-                    feedbackPopup.classList.add('show');
-                    confetti({
-                        particleCount: 200,
-                        spread: 100,
-                        origin: { y: 0.6 },
-                        zIndex: 1000
-                    });
+                    if (hasImposter) {
+                        errorPopup.classList.add('show');
+                    } else {
+                        const nombreDeFichiers = 5;
+                        const num = Math.floor(Math.random() * nombreDeFichiers) + 1;
+                        fichaImg.src = `ficha/ficha${num}.GIF`;
+                        fichaImg.style.display = 'block';
 
-                    const prenomSaisi = document.getElementById('prenom').value;
-                    const ambianceChoisie = document.getElementById('ambiance-validee').value;
-                    const lieuChoisi = document.getElementById('lieu-choisi').value;
-                    
-                    enregistrerVote(prenomSaisi, ambianceChoisie, lieuChoisi);
+                        feedbackPopup.classList.add('show');
+                        confetti({
+                            particleCount: 200,
+                            spread: 100,
+                            origin: { y: 0.6 },
+                            zIndex: 1000
+                        });
+
+                        const prenomSaisi = document.getElementById('prenom').value;
+                        const ambianceChoisie = document.getElementById('ambiance-validee').value;
+                        const lieuChoisi = document.getElementById('lieu-choisi').value;
+                        
+                        enregistrerVote(prenomSaisi, ambianceChoisie, lieuChoisi);
+                    }
                 }
             }, 900);
         });
@@ -601,9 +701,12 @@
         feedbackPopup.addEventListener('click', function() {
             this.classList.remove('show');
         });
+
+        closeErrorBtn.addEventListener('click', function() {
+            errorPopup.classList.remove('show');
+        });
     });
 
-    // Mets ton vrai lien Google Apps Script ici
     const scriptURL = 'https://script.google.com/macros/s/AKfycbxVvnYL2S3MIepDmy2KqinJZ_ZboDtgyLwN2xYaMyKsGQlC0voTEmbc-rRarJvzr4tN/exec';
 
     function enregistrerVote(prenom, ambiance, lieu) {
