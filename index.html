@@ -478,11 +478,7 @@
                 <label class="form-label">Engagement formel</label>
                 <label class="checkbox-item">
                     <input type="checkbox" id="check-date" required>
-                    <span class="checkbox-text">Je valide que je serai présent(e) le week-end du 28 mars 2027. C'est noté dans l'agenda, c'est gravé dans le marbre.</span>
-                </label>
-                <label class="checkbox-item">
-                    <input type="checkbox" id="check-conditions" required>
-                    <span class="checkbox-text">Je jure d'être là sauf apocalypse zombie ou enlèvement extraterrestre.</span>
+                    <span class="checkbox-text">Je valide que je serai présent(e) le week-end du 3 avril 2027. C'est noté dans l'agenda, c'est gravé dans le marbre.</br>Je jure d'être là sauf apocalypse zombie ou enlèvement extraterrestre.</span>
                 </label>
             </div>
 
@@ -503,23 +499,25 @@
                 <label class="form-label">On va où ?</label>
                 <select id="lieu-choisi" required>
                     <option value="">Sélectionne une destination...</option>
-                    <option value="Montagne / Chalet">Montagne / Chalet 🏔️</option>
-                    <option value="Mer / Villa">Mer / Villa 🌊</option>
-                    <option value="Campagne / Gîte">Campagne / Gîte 🌳</option>
-                    <option value="Ville / Étranger">Ville / Étranger 🏙️</option>
+                    <option value="Bordeaux">Bordeaux</option>
+                    <option value="Poitiers">Poitiers</option>
+                    <option value="Tours">Tours</option>
+                    <option value="Mont-de-Marsan">Mont-de-Marsan</option>
+                    <option value="Bressuire">Bressuire</option>
+                    <option value="Ailleurs">Ailleurs</option>
                 </select>
             </div>
 
             <div class="form-group">
                 <label class="form-label">Vérification de sécurité (Anti-imposteur)</label>
-                <p class="checkbox-text" style="margin-top: 0;">Sélectionne uniquement les photos de la bande pour prouver ton identité.</p>
+                <p class="checkbox-text" style="margin-top: 0;">Prouve que tu es vraiment de la bande : sélectionne toutes les photos des personnes qui étaient avec nous en BTS.</p>
                 
                 <div class="captcha-grid">
-                    <img src="img/ficha1.jpg" class="captcha-img bts-true" alt="Photo 1">
+                    <img src="img/pote1.jpg" class="captcha-img bts-true" alt="Photo 1">
                     <img src="img/inconnu1.jpg" class="captcha-img bts-false" alt="Photo 2">
-                    <img src="img/ficha2.jpg" class="captcha-img bts-true" alt="Photo 3">
+                    <img src="img/pote2.jpg" class="captcha-img bts-true" alt="Photo 3">
                     <img src="img/inconnu2.jpg" class="captcha-img bts-false" alt="Photo 4">
-                    <img src="img/ficha3.jpg" class="captcha-img bts-true" alt="Photo 5">
+                    <img src="img/pote3.jpg" class="captcha-img bts-true" alt="Photo 5">
                     <img src="img/inconnu3.jpg" class="captcha-img bts-false" alt="Photo 6">
                 </div>
                 <input type="hidden" id="captcha-valide" required>
@@ -542,7 +540,7 @@
         </div>
         <img id="random-ficha" src="" alt="Ficha" style="width:100%; border-radius:12px; margin: 15px 0; display: none;">
         <div class="feedback-text">
-            T'as réussi le test. Prépare ton foie et tes affaires, on se voit en mars 2027.
+            T'as réussi le test. Prépare ton foie et tes affaires, on se voit en avril 2027.
         </div>
     </div>
 
